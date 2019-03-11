@@ -16,9 +16,37 @@ namespace ScreenRecorderCLI
         {
             _path = path;
         }
-        public void CreateRecording()
+        public void CreateRecording(Options opt)
         {
-            _rec = Recorder.CreateRecorder();
+            var recordOpt = new RecorderOptions
+            {
+                RecorderMode = RecorderMode.Video,
+                //If throttling is disabled, out of memory exceptions may eventually crash the program,
+                //depending on encoder settings and system specifications.
+                IsThrottlingDisabled = false,
+                //Hardware encoding is enabled by default.
+                IsHardwareEncodingEnabled = true,
+                //Low latency mode provides faster encoding, but can reduce quality.
+                IsLowLatencyEnabled = false,
+                //Fast start writes the mp4 header at the beginning of the file, to facilitate streaming.
+                IsMp4FastStartEnabled = false,
+                AudioOptions = new AudioOptions
+                {
+                    Bitrate = AudioBitrate.bitrate_128kbps,
+                    Channels = AudioChannels.Stereo,
+                    IsAudioEnabled = true
+                },
+                VideoOptions = new VideoOptions
+                {
+                    BitrateMode = BitrateControlMode.UnconstrainedVBR,
+                    Bitrate = 8000 * 1000,
+                    Framerate = opt.Framerate,
+                    IsMousePointerEnabled = true,
+                    IsFixedFramerate = false,
+                    EncoderProfile = H264Profile.Main
+                }
+            };
+            _rec = Recorder.CreateRecorder(recordOpt);
             _rec.OnRecordingComplete += Rec_OnRecordingComplete;
             _rec.OnRecordingFailed += Rec_OnRecordingFailed;
             _rec.OnStatusChanged += Rec_OnStatusChanged;
@@ -36,7 +64,7 @@ namespace ScreenRecorderCLI
         private void Rec_OnRecordingComplete(object sender, RecordingCompleteEventArgs e)
         {
             var path = e.FilePath;
-            Console.WriteLine($"file is saved to: {path}");
+            Console.WriteLine(path);
             isEncording = false;
         }
         private void Rec_OnRecordingFailed(object sender, RecordingFailedEventArgs e)

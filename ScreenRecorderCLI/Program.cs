@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
+using CommandLine;
 
 namespace ScreenRecorderCLI
 {
@@ -15,15 +16,18 @@ namespace ScreenRecorderCLI
                 exitEvent.Set();
             };
 
-            var fileName = Path.ChangeExtension(DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss"), "mp4");
-            var path = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, fileName);
+            Parser.Default.ParseArguments<Options>(args)
+                .WithParsed(opt => {
+                    var recordService = new RecordService(opt.FilePath);
+                    recordService.CreateRecording(opt);
 
-            var recordService = new RecordService(path);
-
-            recordService.CreateRecording();
-
-            exitEvent.WaitOne();
-            recordService.EndRecording();
+                    exitEvent.WaitOne();
+                    recordService.EndRecording();
+                })
+                .WithNotParsed(er => {
+                    Console.Error.WriteLine("Invalid arguments. See --help");
+                    return;
+                });
         }
     }
 }
