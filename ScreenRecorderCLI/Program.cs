@@ -20,7 +20,6 @@ namespace ScreenRecorderCLI
 
             var recordService = new RecordService(path);
 
-
             recordService.CreateRecording();
 
             exitEvent.WaitOne();
