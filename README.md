@@ -6,6 +6,8 @@ Required: Windows 8+
 
 -o, --output       Set output filepath
 
+--noaudio          Record without audio
+
 --help             Display this help screen.
 
 --version          Display version information.
