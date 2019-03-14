@@ -30,5 +30,11 @@ namespace ScreenRecorderCLI
             }
         }
         private string _filePath;
+
+        [Option("noaudio",
+            Required = false,
+            Default = false,
+            HelpText = "Record without audio")]
+        public bool NoAudio { get; set; }
     }
 }

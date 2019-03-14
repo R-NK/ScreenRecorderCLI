@@ -34,7 +34,7 @@ namespace ScreenRecorderCLI
                 {
                     Bitrate = AudioBitrate.bitrate_128kbps,
                     Channels = AudioChannels.Stereo,
-                    IsAudioEnabled = true
+                    IsAudioEnabled = !opt.NoAudio
                 },
                 VideoOptions = new VideoOptions
                 {
