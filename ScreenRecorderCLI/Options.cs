@@ -19,7 +19,7 @@ namespace ScreenRecorderCLI
         [Option('b', "bitrate",
             Required = false,
             Default = 15000,
-            HelpText = "Video Bitrate (kbps/s)")]
+            HelpText = "Video Bitrate (kbps)")]
         public int Bitrate { get; set; }
 
         [Option('o', "output",

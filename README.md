@@ -4,6 +4,8 @@ Required: Windows 8+
 ```
 -f, --framerate    Required. (Default: 30) Set video framerate
 
+-b, --bitrate      Set Video Bitrate (kbps)
+
 -o, --output       Set output filepath
 
 --noaudio          Record without audio
