@@ -16,6 +16,12 @@ namespace ScreenRecorderCLI
             HelpText = "Set video framerate")]
         public int Framerate { get; set; }
 
+        [Option('b', "bitrate",
+            Required = false,
+            Default = 15000,
+            HelpText = "Video Bitrate (kbps/s)")]
+        public int Bitrate { get; set; }
+
         [Option('o', "output",
             Required = false,
             HelpText = "Set output filepath")]

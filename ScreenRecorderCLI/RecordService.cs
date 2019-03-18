@@ -39,7 +39,7 @@ namespace ScreenRecorderCLI
                 VideoOptions = new VideoOptions
                 {
                     BitrateMode = BitrateControlMode.CBR,
-                    Bitrate = 20000 * 1000,
+                    Bitrate = opt.Bitrate * 1000,
                     Framerate = opt.Framerate,
                     IsMousePointerEnabled = true,
                     IsFixedFramerate = false,
