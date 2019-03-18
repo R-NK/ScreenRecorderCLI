@@ -9,14 +9,10 @@ namespace ScreenRecorderCLI
 {
     class Utils
     {
-        public static string GenerateSavePath(string fileNameWithOutExt = null)
+        public static string GenerateSavePath()
         {
-            var fileName = Path.ChangeExtension(fileNameWithOutExt, "mp4") ?? GenerateFileNameByDateTimeNow();
+            var fileName = Path.ChangeExtension(DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss"), "mp4");
             return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "recorded", fileName);
-        }
-        public static string GenerateFileNameByDateTimeNow()
-        {
-            return Path.ChangeExtension(DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss"), "mp4");
         }
     }
 }

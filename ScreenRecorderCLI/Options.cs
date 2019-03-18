@@ -22,7 +22,10 @@ namespace ScreenRecorderCLI
         public string FilePath {
             get
             {
-                return Utils.GenerateSavePath(_filePath);
+                if (_filePath == null) return Utils.GenerateSavePath();
+
+                Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                return Path.GetFullPath(_filePath);
             }
             set
             {
