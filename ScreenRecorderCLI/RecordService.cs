@@ -38,12 +38,12 @@ namespace ScreenRecorderCLI
                 },
                 VideoOptions = new VideoOptions
                 {
-                    BitrateMode = BitrateControlMode.UnconstrainedVBR,
-                    Bitrate = 8000 * 1000,
+                    BitrateMode = BitrateControlMode.CBR,
+                    Bitrate = 20000 * 1000,
                     Framerate = opt.Framerate,
                     IsMousePointerEnabled = true,
                     IsFixedFramerate = false,
-                    EncoderProfile = H264Profile.Main
+                    EncoderProfile = H264Profile.High
                 }
             };
             _rec = Recorder.CreateRecorder(recordOpt);
