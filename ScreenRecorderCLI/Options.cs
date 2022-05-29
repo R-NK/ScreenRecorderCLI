@@ -1,15 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CommandLine;
+﻿using CommandLine;
+using System;
 using System.IO;
 
 namespace ScreenRecorderCLI
 {
     class Options
     {
+        [Option('t', "title",
+            Required = false,
+            Default = "",
+            HelpText = "Target window title (Partial Match). When empty, entire desktop will be recorded."),
+            ]
+        public string WindowTitle { get; set; }
+
         [Option('f', "framerate",
             Required = true,
             Default = 30,
@@ -25,7 +28,8 @@ namespace ScreenRecorderCLI
         [Option('o', "output",
             Required = false,
             HelpText = "Set output filepath")]
-        public string FilePath {
+        public string FilePath
+        {
             get
             {
                 if (_filePath == null) return Utils.GenerateSavePath();
