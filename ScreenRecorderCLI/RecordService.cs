@@ -1,7 +1,6 @@
-﻿using System;
+﻿using ScreenRecorderLib;
+using System;
 using System.Collections.Generic;
-using System.Text;
-using ScreenRecorderLib;
 using System.Threading;
 
 namespace ScreenRecorderCLI
@@ -18,34 +17,80 @@ namespace ScreenRecorderCLI
         }
         public void CreateRecording(Options opt)
         {
+
+
             var recordOpt = new RecorderOptions
             {
-                RecorderMode = RecorderMode.Video,
-                //If throttling is disabled, out of memory exceptions may eventually crash the program,
-                //depending on encoder settings and system specifications.
-                IsThrottlingDisabled = false,
-                //Hardware encoding is enabled by default.
-                IsHardwareEncodingEnabled = true,
-                //Low latency mode provides faster encoding, but can reduce quality.
-                IsLowLatencyEnabled = false,
-                //Fast start writes the mp4 header at the beginning of the file, to facilitate streaming.
-                IsMp4FastStartEnabled = false,
+                OutputOptions = new OutputOptions
+                {
+                    RecorderMode = RecorderMode.Video,
+                },
                 AudioOptions = new AudioOptions
                 {
                     Bitrate = AudioBitrate.bitrate_128kbps,
                     Channels = AudioChannels.Stereo,
-                    IsAudioEnabled = !opt.NoAudio
+                    IsAudioEnabled = !opt.NoAudio,
                 },
-                VideoOptions = new VideoOptions
+                VideoEncoderOptions = new VideoEncoderOptions
                 {
-                    BitrateMode = BitrateControlMode.CBR,
                     Bitrate = opt.Bitrate * 1000,
                     Framerate = opt.Framerate,
-                    IsMousePointerEnabled = true,
                     IsFixedFramerate = false,
-                    EncoderProfile = H264Profile.High
+                    Encoder = new H264VideoEncoder
+                    {
+                        BitrateMode = H264BitrateControlMode.UnconstrainedVBR,
+                        EncoderProfile = H264Profile.Main,
+                    },
+                    //Fragmented Mp4 allows playback to start at arbitrary positions inside a video stream,
+                    //instead of requiring to read the headers at the start of the stream.
+                    IsFragmentedMp4Enabled = true,
+                    //If throttling is disabled, out of memory exceptions may eventually crash the program,
+                    //depending on encoder settings and system specifications.
+                    IsThrottlingDisabled = false,
+                    //Hardware encoding is enabled by default.
+                    IsHardwareEncodingEnabled = true,
+                    //Low latency mode provides faster encoding, but can reduce quality.
+                    IsLowLatencyEnabled = true,
+                    //Fast start writes the mp4 header at the beginning of the file, to facilitate streaming.
+                    IsMp4FastStartEnabled = false,
+                },
+                MouseOptions = new MouseOptions
+                {
+                    IsMouseClicksDetected = false,
+                    IsMousePointerEnabled = true
                 }
             };
+
+            var sources = new List<RecordingSourceBase>();
+            if (opt.WindowTitle != "")
+            {
+                var windows = Recorder.GetWindows();
+                var target = windows.Find(w => w.Title.StartsWith(opt.WindowTitle));
+                if (target != null)
+                {
+                    sources.Add(target);
+                    Console.WriteLine($"Recording Target: {target}");
+                }
+                else
+                {
+                    Console.Error.WriteLine($"Failed to find the window: {opt.WindowTitle}");
+                    return;
+                }
+            }
+            else
+            {
+                var mainMonitor = new DisplayRecordingSource(DisplayRecordingSource.MainMonitor);
+                sources.Add(mainMonitor);
+                Console.WriteLine($"Recording Target: {mainMonitor}");
+            }
+            recordOpt.SourceOptions = new SourceOptions
+            {
+                RecordingSources = sources
+            };
+
+            Thread.Sleep(5000);
+            Console.WriteLine("Start recording");
+
             _rec = Recorder.CreateRecorder(recordOpt);
             _rec.OnRecordingComplete += Rec_OnRecordingComplete;
             _rec.OnRecordingFailed += Rec_OnRecordingFailed;
@@ -57,7 +102,8 @@ namespace ScreenRecorderCLI
         {
             isEncording = true;
             _rec.Stop();
-            while (isEncording) {
+            while (isEncording)
+            {
                 Thread.Sleep(1000);
             }
         }
